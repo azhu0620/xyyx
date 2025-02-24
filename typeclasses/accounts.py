@@ -3,7 +3,7 @@ from evennia import DefaultAccount
 class Account(DefaultAccount):
     def at_account_creation(self):
         print("DEBUG: at_account_creation called")
-        self.cmdset.add_default("commands.default_cmdsets.UnloggedinCmdSet", permanent=True)
+        self.cmdset.add_default("commands.default_cmdsets.UnloggedinCmdSet", persistent=True)
 
     def at_connect(self):
         print(f"DEBUG: at_connect called for session {self.session.address}")

@@ -1,16 +1,24 @@
+"""
+Custom command sets for the xyyx project.
+
+This module defines command sets for unlogged-in users, guiding them through
+the account creation and login process with custom prompts and timeouts.
+"""
+
 import random
-from evennia import create_object, utils, CmdSet, Command
+from evennia import create_object, utils, CmdSet
 from evennia.commands.default.unloggedin import CmdUnconnectedQuit, CmdUnconnectedLook, CmdUnconnectedConnect, CmdUnconnectedCreate
 from evennia.commands.default.muxcommand import MuxCommand
 
 # 随机中文名生成器
 def generate_random_name():
+    """Generate a random Chinese name."""
     surnames = ["张", "李", "王", "赵", "萧", "段", "慕容", "令狐"]
     given_names = ["无忌", "三丰", "翠山", "峰", "冲", "云", "风", "雪"]
     return random.choice(surnames) + random.choice(given_names)
 
 def disconnect_with_timeout(caller, timeout, message):
-    """延迟断开连接"""
+    """Disconnect the caller after a timeout if not authenticated."""
     def disconnect():
         if not caller.is_authenticated():
             caller.msg(message)
@@ -18,7 +26,7 @@ def disconnect_with_timeout(caller, timeout, message):
     utils.delay(timeout, disconnect)
 
 class CmdEnterName(MuxCommand):
-    """输入英文名字"""
+    """Input an English name for login or account creation."""
     key = "name"
 
     def func(self):
@@ -43,7 +51,7 @@ class CmdEnterName(MuxCommand):
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdLoginPassword(MuxCommand):
-    """输入登录密码"""
+    """Input password for login."""
     key = "password"
 
     def func(self):
@@ -65,7 +73,7 @@ class CmdLoginPassword(MuxCommand):
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdCreateConfirm(MuxCommand):
-    """确认创建账号"""
+    """Confirm account creation."""
     key = "y"
 
     def func(self):
@@ -78,7 +86,7 @@ class CmdCreateConfirm(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdCreateDeny(MuxCommand):
-    """拒绝创建账号"""
+    """Deny account creation."""
     key = "n"
 
     def func(self):
@@ -89,7 +97,7 @@ class CmdCreateDeny(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetName(MuxCommand):
-    """设置中文名"""
+    """Set a Chinese name."""
     key = "name"
 
     def func(self):
@@ -109,7 +117,7 @@ class CmdSetName(MuxCommand):
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmName(MuxCommand):
-    """确认随机姓名"""
+    """Confirm random Chinese name."""
     key = "y"
 
     def func(self):
@@ -120,7 +128,7 @@ class CmdConfirmName(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdDenyName(MuxCommand):
-    """拒绝随机姓名"""
+    """Deny random Chinese name."""
     key = "n"
 
     def func(self):
@@ -130,7 +138,7 @@ class CmdDenyName(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetPassword(MuxCommand):
-    """设置密码"""
+    """Set account password."""
     key = "password"
 
     def func(self):
@@ -146,7 +154,7 @@ class CmdSetPassword(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmPassword(MuxCommand):
-    """确认密码"""
+    """Confirm account password."""
     key = "password"
 
     def func(self):
@@ -163,7 +171,7 @@ class CmdConfirmPassword(MuxCommand):
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetIdentifier(MuxCommand):
-    """设置身份标识"""
+    """Set account identifier."""
     key = "identifier"
 
     def func(self):
@@ -179,7 +187,7 @@ class CmdSetIdentifier(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmIdentifier(MuxCommand):
-    """确认身份标识"""
+    """Confirm account identifier."""
     key = "identifier"
 
     def func(self):
@@ -207,7 +215,7 @@ class CmdConfirmIdentifier(MuxCommand):
             disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
 class CmdSetAttribute(MuxCommand):
-    """选择属性分配方式"""
+    """Choose attribute allocation method."""
     key = "attribute"
 
     def func(self):
@@ -233,8 +241,6 @@ class CmdSetAttribute(MuxCommand):
         fixed_attr = attr_map.get(caller.ndb.attr_choice)
         fixed_value = caller.ndb.attr_value if fixed_attr else None
         char.set_innate_attributes(fixed_attr, fixed_value)
-        char.db.innate_attributes["先天福缘"] = random.randint(10, 30)
-        char.db.innate_attributes["先天容貌"] = random.randint(10, 30)
         attrs = char.db.innate_attributes
         caller.msg(
             f"膂力[{attrs['先天臂力']}]，悟性[{attrs['先天悟性']}]，"
@@ -244,7 +250,7 @@ class CmdSetAttribute(MuxCommand):
         caller.cmdset.add(ConfirmAttributesCmdSet)
 
 class CmdSetAttributeValue(MuxCommand):
-    """设置指定属性值"""
+    """Set a specific attribute value."""
     key = "value"
 
     def func(self):
@@ -264,7 +270,7 @@ class CmdSetAttributeValue(MuxCommand):
             disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
 class CmdConfirmAttributes(MuxCommand):
-    """确认属性"""
+    """Confirm character attributes."""
     key = "y"
 
     def func(self):
@@ -275,7 +281,7 @@ class CmdConfirmAttributes(MuxCommand):
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdDenyAttributes(MuxCommand):
-    """拒绝属性"""
+    """Deny character attributes."""
     key = "n"
 
     def func(self):
@@ -285,7 +291,7 @@ class CmdDenyAttributes(MuxCommand):
         disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
 class CmdSetGender(MuxCommand):
-    """设置性别"""
+    """Set character gender."""
     key = "gender"
 
     def func(self):
@@ -317,74 +323,88 @@ class CmdSetGender(MuxCommand):
 
 # 定义命令集
 class EnterNameCmdSet(CmdSet):
+    """Command set for entering an English name."""
     key = "EnterNameCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdEnterName)
 
 class LoginPasswordCmdSet(CmdSet):
+    """Command set for entering a password."""
     key = "LoginPasswordCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdLoginPassword)
 
 class CreateConfirmCmdSet(CmdSet):
+    """Command set for confirming account creation."""
     key = "CreateConfirmCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdCreateConfirm)
         self.add(CmdCreateDeny)
 
 class CreateNameCmdSet(CmdSet):
+    """Command set for setting a Chinese name."""
     key = "CreateNameCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetName)
 
 class ConfirmNameCmdSet(CmdSet):
+    """Command set for confirming a random Chinese name."""
     key = "ConfirmNameCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdConfirmName)
         self.add(CmdDenyName)
 
 class SetPasswordCmdSet(CmdSet):
+    """Command set for setting a password."""
     key = "SetPasswordCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetPassword)
 
 class ConfirmPasswordCmdSet(CmdSet):
+    """Command set for confirming a password."""
     key = "ConfirmPasswordCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdConfirmPassword)
 
 class SetIdentifierCmdSet(CmdSet):
+    """Command set for setting an identifier."""
     key = "SetIdentifierCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetIdentifier)
 
 class ConfirmIdentifierCmdSet(CmdSet):
+    """Command set for confirming an identifier."""
     key = "ConfirmIdentifierCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdConfirmIdentifier)
 
 class SetAttributeCmdSet(CmdSet):
+    """Command set for choosing attribute allocation."""
     key = "SetAttributeCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetAttribute)
 
 class SetAttributeValueCmdSet(CmdSet):
+    """Command set for setting a specific attribute value."""
     key = "SetAttributeValueCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetAttributeValue)
 
 class ConfirmAttributesCmdSet(CmdSet):
+    """Command set for confirming character attributes."""
     key = "ConfirmAttributesCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdConfirmAttributes)
         self.add(CmdDenyAttributes)
 
 class SetGenderCmdSet(CmdSet):
+    """Command set for setting character gender."""
     key = "SetGenderCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdSetGender)
 
 class UnloggedinCmdSet(CmdSet):
+    """Command set for unlogged-in users."""
     key = "UnloggedinCmdSet"
     def at_cmdset_creation(self):
         self.add(CmdUnconnectedQuit)
