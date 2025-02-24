@@ -24,6 +24,18 @@ class ObjectParent:
 
 
 class Object(ObjectParent, DefaultObject):
+    def get_display_name(self, looker, **kwargs):
+        """
+        Customize how the object’s name appears when looked at.
+        Only Developers can see the database ID.
+        """
+        chinese_name = self.db.chinese_name or self.key
+        base_name = f"{chinese_name}（{self.key}）"
+        
+        # 检查调用者是否有 Developer 权限
+        if looker and looker.locks.check_lockstring(looker, "perm(Developer)"):
+            return f"{base_name}(#{self.dbref})"
+        return base_name
     """
     This is the root Object typeclass, representing all entities that
     have an actual presence in-game. DefaultObjects generally have a

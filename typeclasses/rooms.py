@@ -1,4 +1,3 @@
-
 from evennia.objects.objects import DefaultRoom
 from .objects import ObjectParent
 

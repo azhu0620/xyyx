@@ -1,4 +1,3 @@
-
 r"""
 Evennia settings file.
 ...

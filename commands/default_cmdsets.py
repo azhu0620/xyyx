@@ -1,4 +1,3 @@
-
 import random
 from evennia import create_object, utils, CmdSet
 from evennia.commands.default.unloggedin import CmdUnconnectedQuit, CmdUnconnectedLook, CmdUnconnectedConnect, CmdUnconnectedCreate

@@ -1,4 +1,3 @@
-
 from evennia import DefaultAccount
 
 class Account(DefaultAccount):
