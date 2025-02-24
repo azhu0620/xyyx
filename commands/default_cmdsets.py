@@ -1,5 +1,5 @@
 import random
-from evennia import create_object, utils, CmdSet
+from evennia import create_object, utils, CmdSet, Command
 from evennia.commands.default.unloggedin import CmdUnconnectedQuit, CmdUnconnectedLook, CmdUnconnectedConnect, CmdUnconnectedCreate
 from evennia.commands.default.muxcommand import MuxCommand
 
@@ -32,14 +32,14 @@ class CmdEnterName(MuxCommand):
         if account:
             caller.ndb.login_account = account
             caller.msg("请输入密码：")
-            caller.cmdset.add("commands.default_cmdsets.LoginPasswordCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.EnterNameCmdSet")
+            caller.cmdset.add(LoginPasswordCmdSet)
+            caller.cmdset.remove(EnterNameCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
         else:
             caller.ndb.new_account_name = name
             caller.msg(f"使用 {name} 这个名字将会创造一个新的人物，您确定吗(y/n)？")
-            caller.cmdset.add("commands.default_cmdsets.CreateConfirmCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.EnterNameCmdSet")
+            caller.cmdset.add(CreateConfirmCmdSet)
+            caller.cmdset.remove(EnterNameCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdLoginPassword(MuxCommand):
@@ -57,11 +57,11 @@ class CmdLoginPassword(MuxCommand):
         if account.check_password(password):
             caller.login(account)
             caller.msg("登录成功！欢迎回到江湖！")
-            caller.cmdset.remove("commands.default_cmdsets.LoginPasswordCmdSet")
+            caller.cmdset.remove(LoginPasswordCmdSet)
         else:
             caller.msg("密码错误，请重新输入您的英文名字：")
-            caller.cmdset.add("commands.default_cmdsets.EnterNameCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.LoginPasswordCmdSet")
+            caller.cmdset.add(EnterNameCmdSet)
+            caller.cmdset.remove(LoginPasswordCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdCreateConfirm(MuxCommand):
@@ -73,8 +73,8 @@ class CmdCreateConfirm(MuxCommand):
         caller.msg("现在请您给自己取一个有气质，有个性的名字。\n"
                    "如果您有困难输入中文名字，请直接敲回车键。\n"
                    "请给自己取一个中文名字：")
-        caller.cmdset.add("commands.default_cmdsets.CreateNameCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.CreateConfirmCmdSet")
+        caller.cmdset.add(CreateNameCmdSet)
+        caller.cmdset.remove(CreateConfirmCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdCreateDeny(MuxCommand):
@@ -84,8 +84,8 @@ class CmdCreateDeny(MuxCommand):
     def func(self):
         caller = self.caller
         caller.msg("请输入您的英文名字：")
-        caller.cmdset.add("commands.default_cmdsets.EnterNameCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.CreateConfirmCmdSet")
+        caller.cmdset.add(EnterNameCmdSet)
+        caller.cmdset.remove(CreateConfirmCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetName(MuxCommand):
@@ -99,13 +99,13 @@ class CmdSetName(MuxCommand):
             caller.ndb.temp_name = random_name
             caller.msg(f"看来您要个随机产生的中文名字．．\n"
                        f"请问您是否满意这个中文名字(y/n)？ ──〖 {random_name} 〗：")
-            caller.cmdset.add("commands.default_cmdsets.ConfirmNameCmdSet")
+            caller.cmdset.add(ConfirmNameCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
         else:
             caller.ndb.temp_name = self.args.strip()
             caller.msg("请设定您的密码：")
-            caller.cmdset.add("commands.default_cmdsets.SetPasswordCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.CreateNameCmdSet")
+            caller.cmdset.add(SetPasswordCmdSet)
+            caller.cmdset.remove(CreateNameCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmName(MuxCommand):
@@ -115,8 +115,8 @@ class CmdConfirmName(MuxCommand):
     def func(self):
         caller = self.caller
         caller.msg("请设定您的密码：")
-        caller.cmdset.add("commands.default_cmdsets.SetPasswordCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.ConfirmNameCmdSet")
+        caller.cmdset.add(SetPasswordCmdSet)
+        caller.cmdset.remove(ConfirmNameCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdDenyName(MuxCommand):
@@ -126,7 +126,7 @@ class CmdDenyName(MuxCommand):
     def func(self):
         caller = self.caller
         caller.msg("请给自己取一个中文名字：")
-        caller.cmdset.remove("commands.default_cmdsets.ConfirmNameCmdSet")
+        caller.cmdset.remove(ConfirmNameCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetPassword(MuxCommand):
@@ -141,8 +141,8 @@ class CmdSetPassword(MuxCommand):
             return
         caller.ndb.temp_password = password
         caller.msg("请再输入一次您的密码，以确认您没记错：")
-        caller.cmdset.add("commands.default_cmdsets.ConfirmPasswordCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.SetPasswordCmdSet")
+        caller.cmdset.add(ConfirmPasswordCmdSet)
+        caller.cmdset.remove(SetPasswordCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmPassword(MuxCommand):
@@ -153,13 +153,13 @@ class CmdConfirmPassword(MuxCommand):
         caller = self.caller
         if self.args != caller.ndb.temp_password:
             caller.msg("两次密码不一致，请重设您的密码：")
-            caller.cmdset.add("commands.default_cmdsets.SetPasswordCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.ConfirmPasswordCmdSet")
+            caller.cmdset.add(SetPasswordCmdSet)
+            caller.cmdset.remove(ConfirmPasswordCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
         else:
             caller.msg("请设定您的身份标识，该标识在您自杀，以及取回密码时使用。不可修改，请谨慎保管：")
-            caller.cmdset.add("commands.default_cmdsets.SetIdentifierCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.ConfirmPasswordCmdSet")
+            caller.cmdset.add(SetIdentifierCmdSet)
+            caller.cmdset.remove(ConfirmPasswordCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdSetIdentifier(MuxCommand):
@@ -174,8 +174,8 @@ class CmdSetIdentifier(MuxCommand):
             return
         caller.ndb.temp_identifier = identifier
         caller.msg("请再输入一次您的身份标识，以确认您没记错：")
-        caller.cmdset.add("commands.default_cmdsets.ConfirmIdentifierCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.SetIdentifierCmdSet")
+        caller.cmdset.add(ConfirmIdentifierCmdSet)
+        caller.cmdset.remove(SetIdentifierCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdConfirmIdentifier(MuxCommand):
@@ -186,8 +186,8 @@ class CmdConfirmIdentifier(MuxCommand):
         caller = self.caller
         if self.args != caller.ndb.temp_identifier:
             caller.msg("两次身份标识不一致，请重设您的身份标识：")
-            caller.cmdset.add("commands.default_cmdsets.SetIdentifierCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.ConfirmIdentifierCmdSet")
+            caller.cmdset.add(SetIdentifierCmdSet)
+            caller.cmdset.remove(ConfirmIdentifierCmdSet)
             disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
         else:
             caller.msg(
@@ -202,8 +202,8 @@ class CmdConfirmIdentifier(MuxCommand):
 您可以输入 (1-4) 指定其中的一项值，或者输入 0 由系统随机选择。
 您的选择是 (0-4)："""
             )
-            caller.cmdset.add("commands.default_cmdsets.SetAttributeCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.ConfirmIdentifierCmdSet")
+            caller.cmdset.add(SetAttributeCmdSet)
+            caller.cmdset.remove(ConfirmIdentifierCmdSet)
             disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
 class CmdSetAttribute(MuxCommand):
@@ -222,8 +222,8 @@ class CmdSetAttribute(MuxCommand):
             self.try_attributes(caller)
         else:
             caller.msg("请输入您想要的数值(10-30)：")
-            caller.cmdset.add("commands.default_cmdsets.SetAttributeValueCmdSet")
-            caller.cmdset.remove("commands.default_cmdsets.SetAttributeCmdSet")
+            caller.cmdset.add(SetAttributeValueCmdSet)
+            caller.cmdset.remove(SetAttributeCmdSet)
             disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
     def try_attributes(self, caller):
@@ -241,7 +241,7 @@ class CmdSetAttribute(MuxCommand):
             f"根骨[{attrs['先天根骨']}]，身法[{attrs['先天身法']}]\n"
             "您同意这一组天赋吗(y/n)？"
         )
-        caller.cmdset.add("commands.default_cmdsets.ConfirmAttributesCmdSet")
+        caller.cmdset.add(ConfirmAttributesCmdSet)
 
 class CmdSetAttributeValue(MuxCommand):
     """设置指定属性值"""
@@ -257,7 +257,7 @@ class CmdSetAttributeValue(MuxCommand):
                 return
             caller.ndb.attr_value = value
             CmdSetAttribute().try_attributes(caller)
-            caller.cmdset.remove("commands.default_cmdsets.SetAttributeValueCmdSet")
+            caller.cmdset.remove(SetAttributeValueCmdSet)
             disconnect_with_timeout(caller, 300, "您用的时间太久了！")
         except ValueError:
             caller.msg("请输入有效数字(10-30)：")
@@ -270,8 +270,8 @@ class CmdConfirmAttributes(MuxCommand):
     def func(self):
         caller = self.caller
         caller.msg("您要扮演男性(m)的角色或女性(f)的角色？")
-        caller.cmdset.add("commands.default_cmdsets.SetGenderCmdSet")
-        caller.cmdset.remove("commands.default_cmdsets.ConfirmAttributesCmdSet")
+        caller.cmdset.add(SetGenderCmdSet)
+        caller.cmdset.remove(ConfirmAttributesCmdSet)
         disconnect_with_timeout(caller, 180, "您三分钟未输入，已断开连接！")
 
 class CmdDenyAttributes(MuxCommand):
@@ -281,7 +281,7 @@ class CmdDenyAttributes(MuxCommand):
     def func(self):
         caller = self.caller
         CmdSetAttribute().try_attributes(caller)
-        caller.cmdset.remove("commands.default_cmdsets.ConfirmAttributesCmdSet")
+        caller.cmdset.remove(ConfirmAttributesCmdSet)
         disconnect_with_timeout(caller, 300, "您用的时间太久了！")
 
 class CmdSetGender(MuxCommand):
@@ -313,82 +313,82 @@ class CmdSetGender(MuxCommand):
         account.characters.add(char)
         caller.login(account)
         caller.msg("角色创建成功！欢迎踏入《夕阳又现》的江湖！")
-        caller.cmdset.remove("commands.default_cmdsets.SetGenderCmdSet")
+        caller.cmdset.remove(SetGenderCmdSet)
 
 # 定义命令集
 class EnterNameCmdSet(CmdSet):
     key = "EnterNameCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdEnterName())
+        self.add(CmdEnterName)
 
 class LoginPasswordCmdSet(CmdSet):
     key = "LoginPasswordCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdLoginPassword())
+        self.add(CmdLoginPassword)
 
 class CreateConfirmCmdSet(CmdSet):
     key = "CreateConfirmCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdCreateConfirm())
-        self.add(CmdCreateDeny())
+        self.add(CmdCreateConfirm)
+        self.add(CmdCreateDeny)
 
 class CreateNameCmdSet(CmdSet):
     key = "CreateNameCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetName())
+        self.add(CmdSetName)
 
 class ConfirmNameCmdSet(CmdSet):
     key = "ConfirmNameCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdConfirmName())
-        self.add(CmdDenyName())
+        self.add(CmdConfirmName)
+        self.add(CmdDenyName)
 
 class SetPasswordCmdSet(CmdSet):
     key = "SetPasswordCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetPassword())
+        self.add(CmdSetPassword)
 
 class ConfirmPasswordCmdSet(CmdSet):
     key = "ConfirmPasswordCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdConfirmPassword())
+        self.add(CmdConfirmPassword)
 
 class SetIdentifierCmdSet(CmdSet):
     key = "SetIdentifierCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetIdentifier())
+        self.add(CmdSetIdentifier)
 
 class ConfirmIdentifierCmdSet(CmdSet):
     key = "ConfirmIdentifierCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdConfirmIdentifier())
+        self.add(CmdConfirmIdentifier)
 
 class SetAttributeCmdSet(CmdSet):
     key = "SetAttributeCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetAttribute())
+        self.add(CmdSetAttribute)
 
 class SetAttributeValueCmdSet(CmdSet):
     key = "SetAttributeValueCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetAttributeValue())
+        self.add(CmdSetAttributeValue)
 
 class ConfirmAttributesCmdSet(CmdSet):
     key = "ConfirmAttributesCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdConfirmAttributes())
-        self.add(CmdDenyAttributes())
+        self.add(CmdConfirmAttributes)
+        self.add(CmdDenyAttributes)
 
 class SetGenderCmdSet(CmdSet):
     key = "SetGenderCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdSetGender())
+        self.add(CmdSetGender)
 
 class UnloggedinCmdSet(CmdSet):
     key = "UnloggedinCmdSet"
     def at_cmdset_creation(self):
-        self.add(CmdUnconnectedQuit())
-        self.add(CmdUnconnectedLook())
-        self.add(CmdUnconnectedConnect())
-        self.add(CmdUnconnectedCreate())
-        self.add(CmdEnterName())
+        self.add(CmdUnconnectedQuit)
+        self.add(CmdUnconnectedLook)
+        self.add(CmdUnconnectedConnect)
+        self.add(CmdUnconnectedCreate)
+        self.add(CmdEnterName)

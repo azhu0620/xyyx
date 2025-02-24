@@ -15,6 +15,7 @@ IN_GAME_ERRORS = True
 DEFAULT_HOME = "#5"
 START_LOCATION = "#5"
 ACCOUNT_TYPECLASS = "typeclasses.accounts.Account"
+CMDSET_UNLOGGEDIN = "commands.default_cmdsets.UnloggedinCmdSet"
 
 # 只保留 Telnet 端口 4000
 TELNET_PORTS = [4000]  # 确保是整数列表
